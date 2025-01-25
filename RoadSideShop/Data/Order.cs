@@ -9,7 +9,7 @@ namespace RoadSideShop.Data
         public DateTime OrderDate { get; set; }
         public decimal TotalAmount { get; set; }
         public int TotalItemsCount { get; set; }
-        public required string PaymentMode { get; set; } // cash or Online
+        public  string PaymentMode { get; set; } // cash or Online
 
     }
 
