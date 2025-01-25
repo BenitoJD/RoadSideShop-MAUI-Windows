@@ -1,4 +1,4 @@
-﻿namespace RoadSideShop
+﻿namespace RoadSideShop.Pages
 {
     public partial class MainPage : ContentPage
     {
