@@ -1,6 +1,8 @@
 ﻿using CommunityToolkit.Maui;
 using Microsoft.Extensions.Logging;
 using RoadSideShop.Data;
+using RoadSideShop.Pages;
+using RoadSideShop.ViewModels;
 
 namespace RoadSideShop
 {
@@ -23,7 +25,9 @@ namespace RoadSideShop
 #if DEBUG
     		builder.Logging.AddDebug();
 #endif
-            builder.Services.AddSingleton<DatabaseService>();
+            builder.Services.AddSingleton<DatabaseService>()
+                .AddSingleton<HomeViewModel>()
+                .AddSingleton<MainPage>();
             return builder.Build();
         }
     }

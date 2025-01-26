@@ -1,5 +1,7 @@
 ﻿using CommunityToolkit.Mvvm.ComponentModel;
+using CommunityToolkit.Mvvm.Input;
 using RoadSideShop.Data;
+using RoadSideShop.Models;
 using System;
 using System.Collections.Generic;
 using System.Collections.ObjectModel;
@@ -14,7 +16,12 @@ namespace RoadSideShop.ViewModels
         private readonly DatabaseService _databaseService;
 
         [ObservableProperty]
-        public MenuCategory[] _categories = [];
+        private MenuCategoryModel[] _categories = [];
+        [ObservableProperty]
+        private MenuCategoryModel? _selectedCategory = null;
+
+        [ObservableProperty]
+        private bool _isLoading;
 
         public HomeViewModel(DatabaseService databaseService)
         {
@@ -28,7 +35,38 @@ namespace RoadSideShop.ViewModels
                 return;
             }
             _isInitialized = true;
-            Categories = await _databaseService.GetMenuCategoriesAsync();
+
+            IsLoading = true;
+
+            Categories = (await _databaseService.GetMenuCategoriesAsync())
+                .Select(MenuCategoryModel.FromEntity)
+                .ToArray();
+            Categories[0].IsSelected = true;
+
+            SelectedCategory = Categories[0];
+
+            IsLoading = false;
         }
+        [RelayCommand]
+        private void SelectCategory(int categoryId)
+        {
+            if (SelectedCategory?.Id == categoryId)
+            {
+                return;
+            }
+
+            var existingSelectedCategory = Categories.FirstOrDefault(c => c.IsSelected);
+            if (existingSelectedCategory != null)
+            {
+                existingSelectedCategory.IsSelected = false;
+            }
+
+            var newlySelectedCategory = Categories.First(c => c.Id == categoryId);
+            newlySelectedCategory.IsSelected = true;
+
+            SelectedCategory = newlySelectedCategory;
+        }
+
     }
 }
+   

@@ -1,15 +1,26 @@
-﻿namespace RoadSideShop.Pages
+﻿using RoadSideShop.ViewModels;
+
+namespace RoadSideShop.Pages
 {
     public partial class MainPage : ContentPage
     {
-        int count = 0;
-
-        public MainPage()
+                private readonly HomeViewModel _homeViewModel;
+        public MainPage(HomeViewModel homeViewModel)
         {
             InitializeComponent();
+            _homeViewModel = homeViewModel;
+            BindingContext = _homeViewModel;
+            Initialize();
         }
 
+        private async void Initialize()
+        {
+            await _homeViewModel.InitializeAsync();
+        }
         
+
+
+
     }
 
 }

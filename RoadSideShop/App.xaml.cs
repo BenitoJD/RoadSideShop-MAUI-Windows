@@ -4,7 +4,6 @@ namespace RoadSideShop
 {
     public partial class App : Application
     {
-        private readonly DatabaseService _databaseService;
 
         public App(DatabaseService databaseService)
         {
@@ -15,14 +14,9 @@ namespace RoadSideShop
                 Current.UserAppTheme = AppTheme.Light;
             }
             MainPage = new AppShell();
-            this._databaseService = databaseService;
+            Task.Run(async() => await databaseService.InitializeDatabaseAsync()).GetAwaiter().GetResult();
         }
-        protected override async void OnStart()
-        {
-            base.OnStart();
-            //initialize and seed db
-           await _databaseService.InitializeDatabaseAsync();
-
-        }
+        
+        
     }
 }
