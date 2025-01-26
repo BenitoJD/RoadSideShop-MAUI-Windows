@@ -1,5 +1,6 @@
 ﻿using CommunityToolkit.Mvvm.ComponentModel;
 using CommunityToolkit.Mvvm.Input;
+using Microsoft.Maui.Controls;
 using RoadSideShop.Data;
 using RoadSideShop.Models;
 using System;
@@ -8,6 +9,7 @@ using System.Collections.ObjectModel;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
+using MenuItem = RoadSideShop.Data.MenuItem;
 
 namespace RoadSideShop.ViewModels
 {
@@ -17,6 +19,10 @@ namespace RoadSideShop.ViewModels
 
         [ObservableProperty]
         private MenuCategoryModel[] _categories = [];
+
+        [ObservableProperty]
+        private MenuItem[] _menuItems = [];
+
         [ObservableProperty]
         private MenuCategoryModel? _selectedCategory = null;
 
@@ -45,15 +51,18 @@ namespace RoadSideShop.ViewModels
 
             SelectedCategory = Categories[0];
 
+            MenuItems = await _databaseService.GetMenuItemsByCategoryAsync(SelectedCategory.Id);
+
             IsLoading = false;
         }
         [RelayCommand]
-        private void SelectCategory(int categoryId)
+        private async Task SelectCategoryAsync(int categoryId)
         {
             if (SelectedCategory?.Id == categoryId)
             {
                 return;
             }
+            IsLoading = true;
 
             var existingSelectedCategory = Categories.FirstOrDefault(c => c.IsSelected);
             if (existingSelectedCategory != null)
@@ -65,6 +74,12 @@ namespace RoadSideShop.ViewModels
             newlySelectedCategory.IsSelected = true;
 
             SelectedCategory = newlySelectedCategory;
+
+            MenuItems = await _databaseService.GetMenuItemsByCategoryAsync(SelectedCategory.Id);
+
+            IsLoading = false;
+
+
         }
 
     }
