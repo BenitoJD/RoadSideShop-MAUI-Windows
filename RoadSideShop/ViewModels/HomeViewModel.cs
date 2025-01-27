@@ -29,6 +29,8 @@ namespace RoadSideShop.ViewModels
         [ObservableProperty]
         private bool _isLoading;
 
+        public ObservableCollection<CartModel> cartItems { get; set; } = new();
+
         public HomeViewModel(DatabaseService databaseService)
         {
             _databaseService = databaseService;
@@ -80,6 +82,48 @@ namespace RoadSideShop.ViewModels
             IsLoading = false;
 
 
+        }
+        [RelayCommand]
+        private void AddtoCart(MenuItem menuItem)
+        {
+            var cartItem = cartItems.FirstOrDefault(c => c.ItemId == menuItem.Id);
+            if (cartItem != null)
+            {
+                cartItem.Quantity++;
+            }
+            else
+            {
+                cartItems.Add(new CartModel
+                {
+                    ItemId = menuItem.Id,
+                    Icon = menuItem.Icon,
+                    Name = menuItem.Name,
+                    Price = menuItem.Price,
+                    Quantity = 1
+                });
+            }
+        }
+        [RelayCommand]
+        private void IncreaseQuantity(CartModel cartItem)
+        {
+            cartItem.Quantity++;
+        }
+        [RelayCommand]
+        private void decreaseQuantity(CartModel cartItem)
+        {
+            if (cartItem.Quantity > 1)
+            {
+                cartItem.Quantity--;
+            }
+            else
+            {
+                cartItems.Remove(cartItem);
+            }
+        }
+        [RelayCommand]
+        private void removeItemFromCart(CartModel cartItem)
+        {
+            cartItems.Remove(cartItem);
         }
 
     }
