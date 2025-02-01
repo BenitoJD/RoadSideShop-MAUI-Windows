@@ -8,6 +8,13 @@
              Shell.NavBarIsVisible="False"
              xmlns:controls="clr-namespace:RoadSideShop.Controls"
              x:DataType="vm:HomeViewModel">
+    <ContentPage.Resources>
+        <ResourceDictionary>
+            <Style TargetType="Label" x:Key="lbl">
+                <!--<Setter Property="" Value=""/>-->
+            </Style>
+        </ResourceDictionary>
+    </ContentPage.Resources>
 
     <Grid ColumnDefinitions=".75*,.25*">
         <Grid Grid.Column="0"
@@ -152,8 +159,8 @@
         </Grid>
         <Grid Grid.Column="1" BackgroundColor="{StaticResource LightWheat}"
               RowDefinitions="Auto,*,Auto" 
-              Padding="10">
-            <VerticalStackLayout Grid.Row="0" Spacing="5">
+              Padding="0, 10">
+            <VerticalStackLayout Grid.Row="0" Spacing="5" Padding="10, 0">
                 <Label Text="Current Order"
                        FontSize="25"
                        FontAttributes="Bold"/>
@@ -258,7 +265,105 @@
                 </CollectionView>
             </Grid>
             <VerticalStackLayout
-                Grid.Row="2">
+                Grid.Row="2"
+                Padding="15,10,15,0">
+                <Border BackgroundColor="White"
+                        Padding="10"
+                        StrokeShape="RoundRectangle 10"
+                        StrokeThickness="0">
+                    <Border.Shadow>
+                        <Shadow Brush="Maroon" Radius="15"/>
+                    </Border.Shadow>
+                    <Grid RowDefinitions="Auto,Auto,Auto,Auto,Auto,Auto"
+                          RowSpacing="8"
+                          ColumnDefinitions="2*, 3*">
+                        <Label Grid.Row="0"
+                               Grid.Column="0"
+                               Style="{StaticResource lbl}"
+                               Text="Subtotal"/>
+                        <Label Grid.Row="0"
+                               Grid.Column="1"
+                               HorizontalOptions="Center"
+                               Text="{Binding Subtotal, StringFormat='{0:C}'}"/>
+
+                        <HorizontalStackLayout Grid.Row="1"
+                                               Grid.Column="0"
+                                               Spacing="5">
+                            <Label Text="Tax"/>
+                            <Label Text="0%" 
+                                   Padding="5,0" 
+                                   BackgroundColor="Wheat" 
+                                   VerticalOptions="Center"/>
+                        </HorizontalStackLayout>
+                        <HorizontalStackLayout
+                            Grid.Row="1"
+                            Grid.Column="0"
+                            Spacing="5">
+                            <Label Text="Tax" VerticalOptions="Center"/>
+                            <Label Padding="5,0"
+                                   BackgroundColor="Wheat"
+                                   Text="{Binding TaxPercentage, StringFormat='{0}%'}"
+                                   VerticalOptions="Center"
+                                   >
+                                <Label.GestureRecognizers>
+                                    <TapGestureRecognizer Command="{Binding TaxPercentageClickCommand}"/>
+                                </Label.GestureRecognizers>
+                            </Label>
+                        </HorizontalStackLayout>
+                        <Label Grid.Row="1"
+                                Grid.Column="1"
+                                Text="{Binding TaxAmount, StringFormat='{0:C}'}"
+                               HorizontalOptions="Center"/>
+
+                        <Border Grid.Row="2"
+                                Grid.ColumnSpan="2"
+                                Stroke="Maroon"
+                                StrokeDashArray="20,4"
+                                StrokeThickness="0.5"/>
+
+                        <Label Grid.Row="3"
+                                Grid.Column="0"
+                                 Style="{StaticResource lbl}"
+                                Text="Total"
+                               FontAttributes="Bold"/>
+                        <Label Grid.Row="3"
+                                Grid.Column="1"
+                                Text="{Binding Total, StringFormat='{0:C}'}"
+                               FontAttributes="Bold"
+                               HorizontalOptions="Center"/>
+
+                        <Border Grid.Row="4"
+                                Grid.ColumnSpan="2"
+                                Stroke="Maroon"
+                                StrokeDashArray="20,4"
+                                StrokeThickness="0.5"/>
+
+                        <Grid Grid.Row="5"
+                              Grid.ColumnSpan="2"
+                              ColumnDefinitions="Auto, *, Auto, Auto"
+                              ColumnSpacing="5">
+                            <Button Grid.Column="0"
+                                    Text="X"
+                                    BackgroundColor="Red"
+                                    MinimumWidthRequest="25"
+                                    MinimumHeightRequest="25"/>
+                            <Button Grid.Column="2"
+                                    Text="Paid Cash"
+                                    BackgroundColor="DarkOliveGreen"
+                                    MinimumWidthRequest="25"
+                                    MinimumHeightRequest="25"/>
+                            <Button Grid.Column="3"
+                                    Text="Paid Online"
+                                    BackgroundColor="DarkOliveGreen"
+                                    MinimumWidthRequest="25"
+                                    MinimumHeightRequest="25"/>
+                        </Grid>
+
+
+
+
+                    </Grid>
+                </Border>
             </VerticalStackLayout>
         </Grid>
     </Grid>

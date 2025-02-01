@@ -6,6 +6,7 @@ using RoadSideShop.Models;
 using System;
 using System.Collections.Generic;
 using System.Collections.ObjectModel;
+using System.Collections.Specialized;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
@@ -16,6 +17,19 @@ namespace RoadSideShop.ViewModels
     public partial class HomeViewModel : ObservableObject
     {
         private readonly DatabaseService _databaseService;
+
+        [ObservableProperty,NotifyPropertyChangedFor(nameof(TaxAmount))]
+        [NotifyPropertyChangedFor(nameof(Total))]
+        private decimal _subtotal;
+
+        
+        [ObservableProperty, NotifyPropertyChangedFor(nameof(TaxAmount))]
+        [NotifyPropertyChangedFor(nameof(Total))]
+        private int _taxPercentage;
+
+        public decimal TaxAmount => (Subtotal * TaxPercentage) / 100;
+
+        public decimal Total => Subtotal + TaxAmount;
 
         [ObservableProperty]
         private MenuCategoryModel[] _categories = [];
@@ -29,12 +43,22 @@ namespace RoadSideShop.ViewModels
         [ObservableProperty]
         private bool _isLoading;
 
+        
+
+
         public ObservableCollection<CartModel> cartItems { get; set; } = new();
 
         public HomeViewModel(DatabaseService databaseService)
         {
             _databaseService = databaseService;
+            cartItems.CollectionChanged += CartItems_CollectionChanged;
         }
+
+        private void CartItems_CollectionChanged(object? sender, System.Collections.Specialized.NotifyCollectionChangedEventArgs e)
+        {
+            RecalculateAmounts();
+        }
+
         private bool _isInitialized;
         public async ValueTask InitializeAsync()
         {
@@ -80,8 +104,6 @@ namespace RoadSideShop.ViewModels
             MenuItems = await _databaseService.GetMenuItemsByCategoryAsync(SelectedCategory.Id);
 
             IsLoading = false;
-
-
         }
         [RelayCommand]
         private void AddtoCart(MenuItem menuItem)
@@ -90,6 +112,8 @@ namespace RoadSideShop.ViewModels
             if (cartItem != null)
             {
                 cartItem.Quantity++;
+                RecalculateAmounts();
+
             }
             else
             {
@@ -107,6 +131,7 @@ namespace RoadSideShop.ViewModels
         private void IncreaseQuantity(CartModel cartItem)
         {
             cartItem.Quantity++;
+            RecalculateAmounts();
         }
         [RelayCommand]
         private void decreaseQuantity(CartModel cartItem)
@@ -114,6 +139,8 @@ namespace RoadSideShop.ViewModels
             if (cartItem.Quantity > 1)
             {
                 cartItem.Quantity--;
+                RecalculateAmounts();
+
             }
             else
             {
@@ -126,6 +153,35 @@ namespace RoadSideShop.ViewModels
             cartItems.Remove(cartItem);
         }
 
+        private void RecalculateAmounts()
+        {
+            Subtotal = cartItems.Sum(c => c.Amount);
+        }
+        [RelayCommand]
+        private async Task TaxPercentageClickAsync()
+        {
+            var result = await Shell.Current.DisplayPromptAsync("Tax Percentage", "Enter the applicable tax percentage", placeholder: "10", initialValue: TaxPercentage.ToString());
+
+            if (result != null && int.TryParse(result, out var taxPercentage))
+            {
+                if (taxPercentage > 100)
+                {
+                    await Shell.Current.DisplayAlert("Tax Percentage", "Tax percentage cannot be more than 100%", "Ok");
+                    return;
+                }
+                if (taxPercentage < 0)
+                {
+                    await Shell.Current.DisplayAlert("Tax Percentage", "Tax percentage cannot be less than 0%", "Ok");
+                    return;
+                }
+                await Shell.Current.DisplayAlert("Tax Percentage", $"Tax percentage updated to {taxPercentage}%", "Ok");
+                TaxPercentage = taxPercentage;
+            }
+            else
+            {
+                await Shell.Current.DisplayAlert("Tax Percentage", "Invalid tax percentage", "Ok");
+            }
+        }
     }
 }
    
