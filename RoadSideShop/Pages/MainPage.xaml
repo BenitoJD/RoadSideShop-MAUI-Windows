@@ -346,7 +346,9 @@
                                     Text="X"
                                     BackgroundColor="Red"
                                     MinimumWidthRequest="25"
-                                    MinimumHeightRequest="25"/>
+                                    MinimumHeightRequest="25"
+                                    Command="{Binding ClearOrderCommand}"
+                                    ToolTipProperties.Text="Clear the cart"/>
                             <Button Grid.Column="2"
                                     Text="Paid Cash"
                                     BackgroundColor="DarkOliveGreen"

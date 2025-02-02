@@ -1,4 +1,5 @@
-﻿using SQLite;
+﻿using RoadSideShop.Models;
+using SQLite;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -56,7 +57,39 @@ namespace RoadSideShop.Data
             var menuItem = await _connection.QueryAsync<MenuItem>(query, categoryId);
             return [.. menuItem];
         }
+        public async Task<string?> PlaceOrderAsync(OrderModel orderModel)
+        {
+            var order = new Order
+            {
+                OrderDate = orderModel.OrderDate,
+                TotalAmount = orderModel.TotalAmount,
+                TotalItemsCount = orderModel.Items.Length,
+                PaymentMode = orderModel.PaymentMode,
+                
+            };
 
+            if (await _connection.InsertAsync(order) > 0)
+            {
+                foreach (var item in orderModel.Items)
+                {
+
+                    item.OrderId = order.Id;
+
+                }
+                if (await _connection.InsertAllAsync(orderModel.Items) == 0)
+                {
+                    await _connection.DeleteAsync(order);
+                    return "Error in inserting order items";
+                }
+            }
+            else
+            {
+                return "Error in inserting order";
+            }
+            orderModel.Id = order.Id;
+
+            return null;
+        }
         public async ValueTask DisposeAsync()
         {
             if (_connection != null)

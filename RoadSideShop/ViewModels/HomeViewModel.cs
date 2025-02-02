@@ -158,6 +158,15 @@ namespace RoadSideShop.ViewModels
             Subtotal = cartItems.Sum(c => c.Amount);
         }
         [RelayCommand]
+        private async Task ClearOrderAsync()
+        {
+            if(await Shell.Current.DisplayAlert("Clear Order", "Are you sure you want to clear the order?", "Yes", "No"))
+            {
+                cartItems.Clear();
+            }
+        }
+
+        [RelayCommand]
         private async Task TaxPercentageClickAsync()
         {
             var result = await Shell.Current.DisplayPromptAsync("Tax Percentage", "Enter the applicable tax percentage", placeholder: "10", initialValue: TaxPercentage.ToString());
