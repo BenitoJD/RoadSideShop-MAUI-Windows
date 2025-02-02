@@ -17,7 +17,7 @@ namespace RoadSideShop.ViewModels
     public partial class HomeViewModel : ObservableObject
     {
         private readonly DatabaseService _databaseService;
-
+        private readonly OrdersViewModel ordersViewModel;
         [ObservableProperty,NotifyPropertyChangedFor(nameof(TaxAmount))]
         [NotifyPropertyChangedFor(nameof(Total))]
         private decimal _subtotal;
@@ -48,9 +48,10 @@ namespace RoadSideShop.ViewModels
 
         public ObservableCollection<CartModel> cartItems { get; set; } = new();
 
-        public HomeViewModel(DatabaseService databaseService)
+        public HomeViewModel(DatabaseService databaseService, OrdersViewModel ordersViewModel)
         {
             _databaseService = databaseService;
+            this.ordersViewModel = ordersViewModel;
             cartItems.CollectionChanged += CartItems_CollectionChanged;
         }
 
@@ -165,8 +166,19 @@ namespace RoadSideShop.ViewModels
                 cartItems.Clear();
             }
         }
-
         [RelayCommand]
+        private async Task PlaceOrderAsync(bool isPaidOnline)
+        {
+            IsLoading = true;
+           if(await ordersViewModel.PlaceOrderAsync([.. cartItems], isPaidOnline))
+            {
+                cartItems.Clear();
+            }
+           
+            IsLoading = false;
+        }
+
+         [RelayCommand]
         private async Task TaxPercentageClickAsync()
         {
             var result = await Shell.Current.DisplayPromptAsync("Tax Percentage", "Enter the applicable tax percentage", placeholder: "10", initialValue: TaxPercentage.ToString());

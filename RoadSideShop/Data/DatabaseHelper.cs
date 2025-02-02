@@ -97,5 +97,14 @@ namespace RoadSideShop.Data
                await _connection.CloseAsync();
             }
         }
+        public async Task<Order[]> GetOrdersAsync()
+        {
+            return await _connection.Table<Order>().ToArrayAsync();
+        }
+
+        public async Task<OrderItem[]> GetOrderItemsAsync(long orderId)
+        {
+            return await _connection.Table<OrderItem>().Where(x => x.OrderId == orderId).ToArrayAsync();
+        }
     }
 }

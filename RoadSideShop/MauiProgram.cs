@@ -27,7 +27,9 @@ namespace RoadSideShop
 #endif
             builder.Services.AddSingleton<DatabaseService>()
                 .AddSingleton<HomeViewModel>()
-                .AddSingleton<MainPage>();
+                .AddSingleton<MainPage>()
+                .AddSingleton<OrdersViewModel>()
+                .AddSingleton<Orders>();
             return builder.Build();
         }
     }
